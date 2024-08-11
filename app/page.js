@@ -1,6 +1,6 @@
-"use client";
+'use client'
 require("dotenv").config();
-import { Box, Button, Stack, TextField } from "@mui/material";
+import { Box, Button, Stack, TextField, Typography } from "@mui/material";
 import { useState } from "react";
 
 export default function Home() {
@@ -16,67 +16,80 @@ export default function Home() {
 
   const sendMessage = async () => {
     setMessage("");
+
     setMessages((messages) => [
       ...messages,
       { role: "user", content: message },
+      { role: "assistant", content: "" },
     ]);
-    const systemPrompt = `You are an AI-powered customer support assistant for HeadstarterAI, a platform that provides AI-driven interviews for software engineers. Follow these guidelines when responding to the question: 1. HeadStarterAI offers AI-powered interviews for software engineering positions. 2. Our platform helps candidates practice and prepare for real job interviews. 3. We cover a wide range of topics including algorithms, data structures, system design, and behavioral questions. 4. Users can access our services through our website or mobile app. 5. If asked about technical issues, guide users to our troubleshooting page. 6. Always maintain user privacy and do not share personal information. 7. If you're unsure about any information, it's okay to say you don't know and offer to connect the user with a human representative. Question: ${message}`;
-    console.log(process.env.API_KEY);
-    const key =
-      "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";
-    const response = await fetch(
-      "https://openrouter.ai/api/v1/chat/completions",
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${key}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          model: "meta-llama/llama-3.1-8b-instruct:free",
-          messages: [{ role: "user", content: systemPrompt }],
-        }),
-      }
-    );
 
-    const json = await response.json();
-    console.log(json);
-    if (response.ok) {
-      setMessages((messages) => [
-        ...messages,
-        { role: "assistant", content: json.choices[0].message.content },
-      ]);
-    }
+    const response = await fetch("/api/chat/headstarter", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify([...messages, { role: "user", content: message }]),
+    }).then(async (res) => {
+
+      const reader = res.body.getReader();
+      let decoder = new TextDecoder();
+
+      let result = "";
+      return reader.read().then(function processText({ done, value }) {
+        if (done) {
+          return result;
+        }
+
+        const text = decoder.decode(value || new Uint8Array(), {
+          stream: true,
+        });
+        setMessages((messages) => {
+          let lastMessage = messages[messages.length - 1];
+          let otherMessages = messages.slice(0, messages.length - 1);
+          console.log(messages);
+
+          return [
+            ...otherMessages,
+            {
+              ...lastMessage,
+              content: lastMessage.content + text,
+            },
+          ];
+        });
+
+        return reader.read().then(processText);
+      });
+    });
   };
 
   return (
     <Box
       width="100vw"
-      height="100vh"
-      display="flex"
-      flexDirection="column"
-      justifyContent="center"
-      alignItems="center"
+      height={"100vh"}
+      display={"flex"}
+      flexDirection={"column"}
+      justifyContent={"center"}
+      alignItems={"center"}
     >
       <Stack
-        direction={"column"}
-        width="500px"
-        height="700px"
-        border="1px solid black"
+        direction="column"
+        width={"600px"}
+        height={"700px"}
+        border={"1px solid black"}
         p={2}
-        spacing={3}
+        spacing={2}
       >
         <Stack
           direction={"column"}
           spacing={2}
           flexGrow={1}
-          overflow="auto"
-          maxHeight="100%"
+          overflow={"auto"}
+          maxHeight={"100%"}
         >
           {messages.map((message, index) => (
             <Box
               key={index}
-              display="flex"
+              display={"flex"}
               justifyContent={
                 message.role === "assistant" ? "flex-start" : "flex-end"
               }
@@ -87,23 +100,24 @@ export default function Home() {
                     ? "primary.main"
                     : "secondary.main"
                 }
-                color="white"
-                borderRadius={16}
+                color={"white"}
                 p={3}
+                borderRadius={16}
               >
-                {message.content}
+                <Typography whiteSpace={'pre-wrap'}>{message.content}</Typography>
               </Box>
             </Box>
           ))}
         </Stack>
         <Stack direction={"row"} spacing={2}>
           <TextField
-            label="Message"
+            label={"Message"}
             fullWidth
             value={message}
             onChange={(e) => setMessage(e.target.value)}
+            variant={"outlined"}
           />
-          <Button variant="contained" onClick={sendMessage}>
+          <Button variant={"contained"} color={"primary"} onClick={sendMessage}>
             Send
           </Button>
         </Stack>
