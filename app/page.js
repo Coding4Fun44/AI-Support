@@ -114,6 +114,7 @@ export default function Home() {
           marginInline={2}
           marginTop={1}
           marginBottom={2}
+          component={"ul"}
         >
           {
             ['What is HeadstarterAI about?','How does HeadstarterAI work?','What is 4005 + 23323?','What is the x-intercept for y = x^2 - 4?','How can I make the following text more professional?'].map((question, index) => {
