@@ -1,8 +1,21 @@
 "use client";
 require("dotenv").config();
-import { Box, Button, Stack, TextField, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  createSvgIcon,
+  Icon,
+  Stack,
+  TextField,
+  Typography,
+} from "@mui/material";
+import "@fortawesome/fontawesome-svg-core/styles.css";
+import { config } from "@fortawesome/fontawesome-svg-core";
+config.autoAddCss = false;
 import { useState } from "react";
 import DeleteIcon from "@mui/icons-material/Delete";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faAws } from "@fortawesome/free-brands-svg-icons";
 
 export default function Home() {
   const defaultMessages = [
@@ -20,7 +33,16 @@ export default function Home() {
     },
   ]);
 
+  const [gptChosen, setGptChosen] = useState(true);
   const [message, setMessage] = useState("");
+
+  const handleGptChange = (event) => {
+    setGptChosen(true);
+  };
+
+  const handleAwsChange = (event) => {
+    setGptChosen(false);
+  };
 
   const clearMessages = async () => {
     setMessage("");
@@ -116,11 +138,15 @@ export default function Home() {
           marginBottom={2}
           component={"ul"}
         >
-          {
-            ['What is HeadstarterAI about?','How does HeadstarterAI work?','What is 4005 + 23323?','What is the x-intercept for y = x^2 - 4?','How can I make the following text more professional?'].map((question, index) => {
-              return <li key={index}>{question}</li>
-            })
-          }
+          {[
+            "What is HeadstarterAI about?",
+            "How does HeadstarterAI work?",
+            "What is 4005 + 23323?",
+            "What is the x-intercept for y = x^2 - 4?",
+            "How can I make the following text more professional?",
+          ].map((question, index) => {
+            return <li key={index}>{question}</li>;
+          })}
         </Typography>
 
         <Typography variant={"body1"} color={"#696969"}>
@@ -142,12 +168,29 @@ export default function Home() {
           width={"100%"}
           display={"flex"}
           borderRadius={"15px 15px 0 0"}
-          justifyContent={"center"}
-          spacing={2}
+          justifyContent={"flex-end"}
+          direction={"row"}
+          spacing={0}
           pr={0.5}
         >
+          {!gptChosen && (
+            <Box display={"flex"} justifyContent={"flex-end"} vi>
+              <Button onClick={handleGptChange}>GPT</Button>
+            </Box>
+          )}
+          {gptChosen && (
+            <Box
+              display={"flex"}
+              justifyContent={"flex-end"}
+              visibility={gptChosen}
+            >
+              <Button onClick={handleAwsChange}>
+                <FontAwesomeIcon icon={faAws} />
+              </Button>
+            </Box>
+          )}
           <Box display={"flex"} justifyContent={"flex-end"}>
-            <Button onClick={clearMessages} sx={{ borderRadius: 16 }}>
+            <Button onClick={clearMessages}>
               <DeleteIcon />
             </Button>
           </Box>
