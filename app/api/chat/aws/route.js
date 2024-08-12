@@ -24,45 +24,45 @@ And finally, you are also an AI-powered grammar assistant. You can help users wi
 
 // Use the Conversation API to send a text message to Amazon Titan Text.
 
-import {
-  BedrockRuntimeClient,
-  ConverseStreamCommand,
-} from "@aws-sdk/client-bedrock-runtime";
+// import {
+//   BedrockRuntimeClient,
+//   ConverseStreamCommand,
+// } from "@aws-sdk/client-bedrock-runtime";
 
-// Create a Bedrock Runtime client in the AWS Region you want to use.
-const client = new BedrockRuntimeClient({ region: "us-east-1" });
+// // Create a Bedrock Runtime client in the AWS Region you want to use.
+// const client = new BedrockRuntimeClient({ region: "us-east-1" });
 
-// Set the model ID, e.g., Titan Text Premier.
-const modelId = "amazon.titan-text-premier-v1:0";
+// // Set the model ID, e.g., Titan Text Premier.
+// const modelId = "amazon.titan-text-premier-v1:0";
 
-// Start a conversation with the user message.
-const userMessage =
-  "Describe the purpose of a 'hello world' program in one line.";
-const conversation = [
-  {
-    role: "user",
-    content: [{ text: userMessage }],
-  },
-];
+// // Start a conversation with the user message.
+// const userMessage =
+//   "Describe the purpose of a 'hello world' program in one line.";
+// const conversation = [
+//   {
+//     role: "user",
+//     content: [{ text: userMessage }],
+//   },
+// ];
 
-// Create a command with the model ID, the message, and a basic configuration.
-const command = new ConverseStreamCommand({
-  modelId,
-  messages: conversation,
-  inferenceConfig: { maxTokens: 512, temperature: 0.5, topP: 0.9 },
-});
+// // Create a command with the model ID, the message, and a basic configuration.
+// const command = new ConverseStreamCommand({
+//   modelId,
+//   messages: conversation,
+//   inferenceConfig: { maxTokens: 512, temperature: 0.5, topP: 0.9 },
+// });
 
-try {
-  // Send the command to the model and wait for the response
-  const response = await client.send(command);
+// try {
+//   // Send the command to the model and wait for the response
+//   const response = await client.send(command);
 
-  // Extract and print the streamed response text in real-time.
-  for await (const item of response.stream) {
-    if (item.contentBlockDelta) {
-      process.stdout.write(item.contentBlockDelta.delta?.text);
-    }
-  }
-} catch (err) {
-  console.log(`ERROR: Can't invoke '${modelId}'. Reason: ${err}`);
-  process.exit(1);
-}
+//   // Extract and print the streamed response text in real-time.
+//   for await (const item of response.stream) {
+//     if (item.contentBlockDelta) {
+//       process.stdout.write(item.contentBlockDelta.delta?.text);
+//     }
+//   }
+// } catch (err) {
+//   console.log(`ERROR: Can't invoke '${modelId}'. Reason: ${err}`);
+//   process.exit(1);
+// }
