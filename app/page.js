@@ -122,7 +122,7 @@ export default function Home() {
           Powered by OpenAI
         </Typography>
         <Typography variant={"body1"} color={"#696969"}>
-          <br></br>Hi! I'm the HeadstarterAI Chatbot. I can help you with any
+          <br></br>Hi! I&apos;m the HeadstarterAI Chatbot. I can help you with any
           questions you have about the Headstarter program, math questions, or
           writing help.
         </Typography>
